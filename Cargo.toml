@@ -1,0 +1,15 @@
+[package]
+name = "aituils-sh"
+version = "0.1.0"
+edition = "2021"
+authors = ["Sondre Teigen <sondre.teigen@outlook.com>"]
+description = "Shell utilities for operating the OpenAI API"
+repository = "https://github.com/sondre-teigen/aiutils-sh"
+license = "MIT"
+keywords = ["shell", "ai"]
+categories = ["command-line-utilities"]
+
+[lib]
+crate-type = ["rlib"]
+
+[dependencies]
