@@ -23,7 +23,7 @@ fn main() -> anyhow::Result<()> {
         .and_then(|s| Some(s.as_str()))
         .unwrap_or("");
 
-    writeln!(out, "{}:", name.display())?;
+    writeln!(out, "File: `{}`", name.display())?;
     writeln!(out, "```{}", language)?;
     aituils_sh::fs::cat(out, args.file.as_path())?;
     writeln!(out, "```")?;
