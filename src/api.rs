@@ -27,8 +27,14 @@ pub struct Message {
 struct CompletionRequest {
     messages: Vec<Message>,
     model: String,
-    prediction: Option<String>,
+    prediction: Option<Prediction>,
     stream: bool,
+}
+
+#[derive(Serialize)]
+struct Prediction {
+    r#type: String,
+    content: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -77,7 +83,10 @@ where
     let body = CompletionRequest {
         messages,
         model: model.to_string(),
-        prediction: prediction.map(|s| s.to_string()),
+        prediction: prediction.map(|s| Prediction {
+            r#type: "content".to_string(),
+            content: s.to_string(),
+        }),
         stream,
     };
 
