@@ -10,6 +10,10 @@ struct Cli {
     name: Option<PathBuf>,
     #[arg(long)]
     language: Option<String>,
+    #[arg(long)]
+    head: Option<usize>,
+    #[arg(long)]
+    tail: Option<usize>,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -25,7 +29,12 @@ fn main() -> anyhow::Result<()> {
 
     writeln!(out, "File: `{}`", name.display())?;
     writeln!(out, "```{}", language)?;
-    aituils_sh::fs::cat(out, args.file.as_path())?;
+    aituils_sh::io::write_lines_partial(
+        out,
+        aituils_sh::fs::open_buffered(args.file.as_path())?,
+        args.head,
+        args.tail,
+    )?;
     writeln!(out, "```")?;
 
     Ok(())

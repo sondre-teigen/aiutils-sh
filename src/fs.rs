@@ -1,12 +1,12 @@
 use std::{
     fs::File,
-    io::{stdin, stdout, BufRead, BufReader, Read, Write},
+    io::{stdin, BufReader, Read, Write},
     path::Path,
 };
 
-use serde::{de::DeserializeOwned, Serialize};
+use serde::de::DeserializeOwned;
 
-fn open<P>(path: P) -> anyhow::Result<Box<dyn Read>>
+pub fn open<P>(path: P) -> anyhow::Result<Box<dyn Read>>
 where
     P: AsRef<Path>,
 {
@@ -17,12 +17,19 @@ where
     }
 }
 
+pub fn open_buffered<P>(path: P) -> anyhow::Result<BufReader<Box<dyn Read>>>
+where
+    P: AsRef<Path>,
+{
+    Ok(BufReader::new(open(path.as_ref())?))
+}
+
 pub fn read_json<D, P>(path: P) -> anyhow::Result<D>
 where
     D: DeserializeOwned,
     P: AsRef<Path>,
 {
-    Ok(serde_json::from_reader(open(path)?)?)
+    Ok(serde_json::from_reader(open_buffered(path)?)?)
 }
 
 pub fn read_string<P>(path: P) -> anyhow::Result<String>
@@ -30,24 +37,8 @@ where
     P: AsRef<Path>,
 {
     let mut out = String::new();
-    read_to_string(&mut out, path)?;
+    open(path)?.read_to_string(&mut out)?;
     Ok(out)
-}
-
-pub fn read_to_string<P>(out: &mut String, path: P) -> anyhow::Result<()>
-where
-    P: AsRef<Path>,
-{
-    open(path)?.read_to_string(out)?;
-    Ok(())
-}
-
-pub fn print_json<S>(value: &S) -> anyhow::Result<()>
-where
-    S: Serialize,
-{
-    serde_json::to_writer(stdout(), value)?;
-    Ok(())
 }
 
 pub fn cat<W, P>(out: &mut W, path: P) -> anyhow::Result<()>
@@ -55,18 +46,7 @@ where
     P: AsRef<Path>,
     W: Write,
 {
-    cat_reader(out, BufReader::new(open(path)?))?;
-    Ok(())
-}
-
-pub fn cat_reader<W, R>(out: &mut W, reader: R) -> anyhow::Result<()>
-where
-    W: Write,
-    R: BufRead,
-{
-    for line in reader.lines() {
-        writeln!(out, "{}", line?)?;
-    }
+    crate::io::write_lines(out, open_buffered(path)?)?;
     Ok(())
 }
 

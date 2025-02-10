@@ -1,9 +1,9 @@
 use std::path::PathBuf;
 
-use clap::Parser as _;
-use std::io::Write as _;
+use clap::Parser;
+use std::io::Write;
 
-#[derive(clap::Parser)]
+#[derive(Parser)]
 struct Cli {
     #[arg(default_value = "-")]
     files: Vec<PathBuf>,
@@ -11,7 +11,7 @@ struct Cli {
 
 fn main() -> anyhow::Result<()> {
     let args = Cli::parse();
-    let out = &mut std::io::stdout().lock();
+    let out = &mut std::io::stdout();
 
     for (i, file) in args.files.iter().enumerate() {
         if i != 0 {

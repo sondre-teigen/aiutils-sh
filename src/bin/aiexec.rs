@@ -1,7 +1,4 @@
-use std::{
-    collections::VecDeque,
-    io::{BufRead as _, BufReader, Write as _},
-};
+use std::io::{BufReader, Write};
 
 use clap::Parser;
 
@@ -60,47 +57,7 @@ fn main() -> anyhow::Result<()> {
             anyhow::bail!("No command output file");
         };
 
-        let mut total_lines = 0;
-        let mut head = Vec::new();
-        let mut tail = VecDeque::new();
-        for line in BufReader::new(stdout).lines() {
-            let line = line?;
-            total_lines += 1;
-            if args.head.is_none() && args.tail.is_none() {
-                writeln!(out, "{}", line)?;
-            } else {
-                if let Some(count) = args.head {
-                    if head.len() < count {
-                        head.push(line.clone());
-                    }
-                }
-                if let Some(count) = args.tail {
-                    while tail.len() >= count {
-                        tail.pop_front();
-                    }
-                    tail.push_back(line);
-                }
-            }
-        }
-
-        if args.head.is_some() || args.tail.is_some() {
-            let overlap = (head.len() + tail.len()).saturating_sub(total_lines);
-
-            for _ in 0..overlap {
-                tail.pop_front();
-            }
-
-            let omitted = total_lines.saturating_sub(head.len() + tail.len());
-            for line in head {
-                writeln!(out, "{}", line)?;
-            }
-            if omitted > 0 {
-                writeln!(out, "[... {} lines omitted]", omitted)?;
-            }
-            for line in tail {
-                writeln!(out, "{}", line)?;
-            }
-        }
+        aituils_sh::io::write_lines_partial(out, BufReader::new(stdout), args.head, args.tail)?;
 
         let status = process.wait()?;
 

@@ -1,9 +1,6 @@
 use std::path::PathBuf;
 
-use aituils_sh::{
-    api::{Message, Role},
-    fs::print_json,
-};
+use aituils_sh::api::{Message, Role};
 use clap::Parser;
 
 #[derive(Parser)]
@@ -24,7 +21,7 @@ fn main() -> anyhow::Result<()> {
         content: content,
     }];
 
-    print_json(&message)?;
+    serde_json::to_writer(&mut std::io::stdout(), &message)?;
 
     Ok(())
 }

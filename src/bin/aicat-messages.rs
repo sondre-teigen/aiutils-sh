@@ -17,7 +17,7 @@ fn main() -> anyhow::Result<()> {
         all_messages.append(&mut aituils_sh::fs::read_json(path)?);
     }
 
-    aituils_sh::fs::print_json(&all_messages)?;
+    serde_json::to_writer(&mut std::io::stdout(), &all_messages)?;
 
     Ok(())
 }
