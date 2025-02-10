@@ -47,6 +47,7 @@ struct CompletionResponseChoice {
     message: CompletionResponseMessage,
 }
 
+#[allow(unused)]
 #[derive(Deserialize, Debug)]
 struct CompletionResponseMessage {
     role: Role,
