@@ -1,4 +1,5 @@
-use std::io::{BufRead as _, Write as _};
+use std::collections::VecDeque;
+use std::io::{BufRead, Write};
 use std::{
     io::BufReader,
     process::{Command, Stdio},
@@ -16,6 +17,11 @@ struct Cli {
     forward_status: bool,
     #[arg(long)]
     no_stderr: bool,
+
+    #[arg(long)]
+    head: Option<usize>,
+    #[arg(long)]
+    tail: Option<usize>,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -37,41 +43,27 @@ fn main() -> anyhow::Result<()> {
             .spawn()
             .with_context(|| format!("Failed to execute command: {}", args.command.join(" ")))?;
 
-        let Some(stdout) = child.stdout.take() else {
-            anyhow::bail!("Failed to capture stdout");
+        if let Some(stdout) = child.stdout.take().map(|r| BufReader::new(r)) {
+            let preface = format!("Command `{}` stdout", args.command.join(" "));
+            if let Some(head) = args.head {
+                cat_head(out, stdout, preface, head)?;
+            } else if let Some(tail) = args.tail {
+                cat_tail(out, stdout, preface, tail)?;
+            } else {
+                cat_all(out, stdout, preface)?;
+            }
         };
-        let mut stdout_empty = true;
 
-        let stderr = child.stderr.take();
-        let mut stderr_empty = true;
-
-        {
-            let reader = BufReader::new(stdout);
-            for line in reader.lines() {
-                if stdout_empty {
-                    writeln!(out, "Command `{}` stdout:", args.command.join(" "))?;
-                    writeln!(out, "```")?;
-                    stdout_empty = false;
-                }
-                writeln!(out, "{}", line?)?;
-            }
-            if !stdout_empty {
-                writeln!(out, "```")?;
-            }
-        }
-
-        if let Some(stderr) = stderr {
-            let reader = BufReader::new(stderr);
-            for line in reader.lines() {
-                if stderr_empty {
-                    writeln!(out, "Command `{}` stderr:", args.command.join(" "))?;
-                    writeln!(out, "```")?;
-                    stderr_empty = false;
-                }
-                writeln!(out, "{}", line?)?;
-            }
-            if !stderr_empty {
-                writeln!(out, "```")?;
+        if !args.no_stderr {
+            if let Some(stderr) = child.stderr.take().map(|r| BufReader::new(r)) {
+                let preface = format!("Command `{}` stderr", args.command.join(" "));
+                if let Some(head) = args.head {
+                    cat_head(out, stderr, preface, head)?;
+                } else if let Some(tail) = args.tail {
+                    cat_tail(out, stderr, preface, tail)?;
+                } else {
+                    cat_all(out, stderr, preface)?;
+                };
             }
         }
 
@@ -83,4 +75,75 @@ fn main() -> anyhow::Result<()> {
     } else {
         Ok(())
     }
+}
+
+fn cat_all<W, R, S>(out: &mut W, reader: R, preface: S) -> anyhow::Result<bool>
+where
+    W: Write,
+    R: BufRead,
+    S: AsRef<str>,
+{
+    Ok(cat_iterator(out, reader.lines(), preface.as_ref())?)
+}
+
+fn cat_head<W, R, S>(out: &mut W, reader: R, preface: S, count: usize) -> anyhow::Result<bool>
+where
+    W: Write,
+    R: BufRead,
+    S: AsRef<str>,
+{
+    let mut buffer = Vec::new();
+    let mut i = 0;
+    for line in reader.lines() {
+        if buffer.len() < count {
+            buffer.push(line);
+        }
+        i += 1;
+    }
+    if i > count {
+        buffer.push(Ok(format!("[... {} lines omitted]", i - count)));
+    }
+    Ok(cat_iterator(out, buffer.into_iter(), preface.as_ref())?)
+}
+
+fn cat_tail<W, R, S>(out: &mut W, reader: R, preface: S, count: usize) -> anyhow::Result<bool>
+where
+    W: Write,
+    R: BufRead,
+    S: AsRef<str>,
+{
+    let mut buffer = VecDeque::new();
+    let mut i = 0;
+    for line in reader.lines() {
+        while buffer.len() >= count {
+            buffer.pop_front();
+        }
+        buffer.push_back(line);
+        i += 1;
+    }
+    if i > count {
+        buffer.push_front(Ok(format!("[... {} lines omitted]", i - count)));
+    }
+    Ok(cat_iterator(out, buffer.into_iter(), preface.as_ref())?)
+}
+
+fn cat_iterator<W, I, S>(out: &mut W, lines: I, preface: S) -> anyhow::Result<bool>
+where
+    W: Write,
+    I: IntoIterator<Item = std::io::Result<String>>,
+    S: AsRef<str>,
+{
+    let mut empty = true;
+    for line in lines {
+        if empty {
+            writeln!(out, "{}:", preface.as_ref())?;
+            writeln!(out, "```")?;
+            empty = false;
+        }
+        writeln!(out, "{}", line?)?;
+    }
+    if !empty {
+        writeln!(out, "```")?;
+    }
+    Ok(!empty)
 }

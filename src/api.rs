@@ -17,13 +17,13 @@ pub enum Role {
     Assistant,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct Message {
     pub role: Role,
     pub content: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 struct CompletionRequest {
     messages: Vec<Message>,
     model: String,
@@ -31,7 +31,7 @@ struct CompletionRequest {
     stream: bool,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 struct Prediction {
     r#type: String,
     content: String,
@@ -121,13 +121,15 @@ where
                             writeln!(stdout())?;
                         }
                     }
+                } else {
+                    println!("No data in response");
                 }
             }
         }
     } else {
         let response: CompletionResponse = response.json()?;
 
-        if let Some(choices) = response.choices {
+        if let Somechoices) = response.choices {
             if let Some(choice) = choices.get(0) {
                 writeln!(stdout(), "{}", choice.message.content)?;
             }

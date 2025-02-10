@@ -13,7 +13,7 @@ struct Cli {
 
     #[arg(long)]
     stream: bool,
-    #[arg(long, default_value="gpt-4o-mini")]
+    #[arg(long, default_value = "gpt-4o-mini")]
     model: String,
 }
 
