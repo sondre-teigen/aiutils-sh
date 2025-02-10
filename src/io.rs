@@ -3,8 +3,6 @@ use std::{
     io::{BufRead, Write},
 };
 
-use serde::Serialize;
-
 pub fn write_lines<W, R>(out: &mut W, reader: R) -> std::io::Result<()>
 where
     W: Write,
