@@ -129,7 +129,7 @@ where
     } else {
         let response: CompletionResponse = response.json()?;
 
-        if let Somechoices) = response.choices {
+        if let Some(choices) = response.choices {
             if let Some(choice) = choices.get(0) {
                 writeln!(stdout(), "{}", choice.message.content)?;
             }
