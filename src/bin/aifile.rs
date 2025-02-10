@@ -1,9 +1,9 @@
 use std::path::PathBuf;
 
-use clap::Parser as _;
+use clap::Parser;
 use std::io::Write as _;
 
-#[derive(clap::Parser)]
+#[derive(Parser)]
 struct Cli {
     file: PathBuf,
     #[arg(long)]
@@ -12,7 +12,7 @@ struct Cli {
     language: Option<String>,
 }
 
-fn main() -> std::io::Result<()> {
+fn main() -> anyhow::Result<()> {
     let args = Cli::parse();
     let out = &mut std::io::stdout().lock();
 

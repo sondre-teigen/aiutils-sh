@@ -1,6 +1,6 @@
 use std::{
     fs::File,
-    io::{stdin, stdout, BufRead, BufReader, Lines, Read, Result, Write},
+    io::{stdin, stdout, BufRead, BufReader, Read, Write},
     path::Path,
 };
 
@@ -50,17 +50,22 @@ where
     Ok(())
 }
 
-// REVIEW
-
-pub fn cat<W, P>(out: &mut W, path: P) -> Result<()>
+pub fn cat<W, P>(out: &mut W, path: P) -> anyhow::Result<()>
 where
     P: AsRef<Path>,
     W: Write,
 {
-    if is_stdin(path.as_ref()) {
-        cat_stdin(out)?;
-    } else {
-        cat_file(out, path.as_ref())?;
+    cat_reader(out, BufReader::new(open(path)?))?;
+    Ok(())
+}
+
+pub fn cat_reader<W, R>(out: &mut W, reader: R) -> anyhow::Result<()>
+where
+    W: Write,
+    R: BufRead,
+{
+    for line in reader.lines() {
+        writeln!(out, "{}", line?)?;
     }
     Ok(())
 }
@@ -70,33 +75,4 @@ where
     P: AsRef<Path>,
 {
     path.as_ref() == Path::new("-")
-}
-
-fn cat_stdin<W>(out: &mut W) -> Result<()>
-where
-    W: Write,
-{
-    cat_lines(out, stdin().lines())?;
-
-    Ok(())
-}
-
-fn cat_file<W, P>(out: &mut W, path: P) -> Result<()>
-where
-    P: AsRef<Path>,
-    W: Write,
-{
-    cat_lines(out, BufReader::new(File::open(path.as_ref())?).lines())?;
-    Ok(())
-}
-
-fn cat_lines<W, R>(out: &mut W, lines: Lines<R>) -> Result<()>
-where
-    W: Write,
-    R: BufRead,
-{
-    for line in lines {
-        writeln!(out, "{}", line?)?;
-    }
-    Ok(())
 }

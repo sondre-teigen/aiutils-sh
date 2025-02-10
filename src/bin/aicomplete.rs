@@ -13,6 +13,8 @@ struct Cli {
 
     #[arg(long)]
     stream: bool,
+    #[arg(long, default_value="gpt-4o-mini")]
+    model: String,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -26,7 +28,7 @@ fn main() -> anyhow::Result<()> {
 
     let key = aituils_sh::api::get_key()?;
 
-    aituils_sh::api::complete(messages, "gpt-4o-mini", prediction, key, args.stream)?;
+    aituils_sh::api::complete(messages, args.model, prediction, key, args.stream)?;
 
     Ok(())
 }
