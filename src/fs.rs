@@ -1,6 +1,6 @@
 use std::{
     fs::File,
-    io::{stdin, BufReader, Read, Write},
+    io::{stdin, BufReader, Read},
     path::Path,
 };
 
