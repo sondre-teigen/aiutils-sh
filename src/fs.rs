@@ -41,15 +41,6 @@ where
     Ok(out)
 }
 
-pub fn cat<W, P>(out: &mut W, path: P) -> anyhow::Result<()>
-where
-    P: AsRef<Path>,
-    W: Write,
-{
-    crate::io::write_lines(out, open_buffered(path)?)?;
-    Ok(())
-}
-
 fn is_stdin<P>(path: P) -> bool
 where
     P: AsRef<Path>,
