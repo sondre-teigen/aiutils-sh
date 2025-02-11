@@ -40,6 +40,7 @@ struct Prediction {
 #[derive(Deserialize, Debug)]
 struct CompletionResponse {
     choices: Option<Vec<CompletionResponseChoice>>,
+    error: Option<serde_json::Value>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -57,6 +58,7 @@ struct CompletionResponseMessage {
 #[derive(Deserialize, Debug)]
 struct CompletionStreamResponse {
     choices: Option<Vec<CompletionStreamResponseChoice>>,
+    error: Option<serde_json::Value>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -121,8 +123,10 @@ where
                             writeln!(stdout())?;
                         }
                     }
+                } else if let Some(data) = data.error {
+                    anyhow::bail!("Error in completion response: {:?}", data);
                 } else {
-                    println!("No data in response");
+                    std::io::stderr().write("No data in response\n".as_bytes())?;
                 }
             }
         }
@@ -133,6 +137,10 @@ where
             if let Some(choice) = choices.get(0) {
                 writeln!(stdout(), "{}", choice.message.content)?;
             }
+        } else if let Some(data) = response.error {
+            anyhow::bail!("Error in completion response: {:?}", data);
+        } else {
+            std::io::stderr().write("No data in response\n".as_bytes())?;
         }
     }
     Ok(())

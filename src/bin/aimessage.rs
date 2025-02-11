@@ -9,10 +9,17 @@ struct Cli {
     content: PathBuf,
     #[arg(long, default_value = "user")]
     role: Role,
+    #[arg(long)]
+    empty: bool,
 }
 
 fn main() -> anyhow::Result<()> {
     let args = Cli::parse();
+
+    if args.empty {
+        println!("[]");
+        return Ok(());
+    }
 
     let content = aituils_sh::fs::read_string(args.content)?;
 

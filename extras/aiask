@@ -1,0 +1,10 @@
+#!/bin/bash
+printf "user> "
+if [ ! -z "$AI_DEVELOPER" ]; then
+    prompt=$(aimessage | aicat-messages - <(aimessage --role developer "$AI_DEVELOPER")) 
+else
+    prompt=$(aimessage)
+fi
+echo
+printf "assistant> "
+echo "$prompt" | aicomplete --stream $@

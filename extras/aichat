@@ -1,0 +1,21 @@
+#!/bin/bash
+if [ ! -z "$AI_DEVELOPER" ]; then
+    history=$(aimessage --role developer "$AI_DEVELOPER")
+else
+    history=$(aimessage --empty)
+fi
+while true; do
+    printf "user> "
+    prompt=$(cat -)
+    echo
+    if [ -z "$prompt" ]; then
+        break
+    fi
+    history=$(aicat-messages <(echo "$history") <(echo "$prompt" | aimessage))
+    
+    printf "assistant> "
+    response=$(echo $history | aicomplete --stream $@ | tee /dev/tty)
+    echo
+
+    history=$(aicat-messages <(echo "$history") <(echo "$response" | aimessage --role assistant))
+done

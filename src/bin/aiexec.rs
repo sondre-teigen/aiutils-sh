@@ -62,6 +62,7 @@ fn main() -> anyhow::Result<()> {
         let status = process.wait()?;
 
         writeln!(out, "```")?;
+        writeln!(out, "")?;
 
         anyhow::Result::<_, anyhow::Error>::Ok(status)
     }?;

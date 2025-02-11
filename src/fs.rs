@@ -1,6 +1,6 @@
 use std::{
     fs::File,
-    io::{stdin, BufReader, Read, Write},
+    io::{stdin, BufReader, Read},
     path::Path,
 };
 
@@ -39,15 +39,6 @@ where
     let mut out = String::new();
     open(path)?.read_to_string(&mut out)?;
     Ok(out)
-}
-
-pub fn cat<W, P>(out: &mut W, path: P) -> anyhow::Result<()>
-where
-    P: AsRef<Path>,
-    W: Write,
-{
-    crate::io::write_lines(out, open_buffered(path)?)?;
-    Ok(())
 }
 
 fn is_stdin<P>(path: P) -> bool

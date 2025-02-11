@@ -36,6 +36,7 @@ fn main() -> anyhow::Result<()> {
         args.tail,
     )?;
     writeln!(out, "```")?;
+    writeln!(out, "")?;
 
     Ok(())
 }
