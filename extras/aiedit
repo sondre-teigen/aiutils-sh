@@ -20,7 +20,7 @@ while true; do
     printf "assistant> "
     response_file=$(mktemp)
     echo "$history" |
-     aicomplete --stream --prediction "$file" | 
+     aicomplete --stream --prediction "$file" $@ | 
      tee "$response_file" |
      aiextract-block --block-index 0 --redirect-rest /dev/tty |
      aisponge "$file"
