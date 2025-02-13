@@ -1,6 +1,6 @@
 use std::{
     fs::File,
-    io::{stdin, BufReader, Read},
+    io::{stdin, stdout, BufReader, Read, Write},
     path::Path,
 };
 
@@ -24,6 +24,17 @@ where
     Ok(BufReader::new(open(path.as_ref())?))
 }
 
+pub fn create<P>(path: P) -> anyhow::Result<Box<dyn Write>>
+where
+    P: AsRef<Path>,
+{
+    if is_stdout(path.as_ref()) {
+        Ok(Box::new(stdout()))
+    } else {
+        Ok(Box::new(File::create(path.as_ref())?))
+    }
+}
+
 pub fn read_json<D, P>(path: P) -> anyhow::Result<D>
 where
     D: DeserializeOwned,
@@ -42,6 +53,13 @@ where
 }
 
 fn is_stdin<P>(path: P) -> bool
+where
+    P: AsRef<Path>,
+{
+    path.as_ref() == Path::new("-")
+}
+
+fn is_stdout<P>(path: P) -> bool
 where
     P: AsRef<Path>,
 {

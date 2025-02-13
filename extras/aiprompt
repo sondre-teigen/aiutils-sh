@@ -1,2 +1,7 @@
 #!/bin/bash
-aimessage | aicomplete $@
+if [ ! -z "$AI_DEVELOPER" ]; then
+    prompt=$(aimessage | aicat-messages <(aimessage --role developer "$AI_DEVELOPER") -)
+else
+    prompt=$(aimessage)
+fi
+echo "$prompt" | aimessage | aicomplete $@

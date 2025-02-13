@@ -26,7 +26,8 @@ fn main() -> anyhow::Result<()> {
         .as_ref()
         .and_then(|s| Some(s.as_str()))
         .unwrap_or("");
-
+    
+    writeln!(out, "")?;
     writeln!(out, "File: `{}`", name.display())?;
     writeln!(out, "```{}", language)?;
     aituils_sh::io::write_lines_partial(
@@ -36,7 +37,6 @@ fn main() -> anyhow::Result<()> {
         args.tail,
     )?;
     writeln!(out, "```")?;
-    writeln!(out, "")?;
 
     Ok(())
 }
