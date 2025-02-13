@@ -1,0 +1,19 @@
+#!/bin/bash
+developer="
+You are a terminal command helper model.
+
+The user will provide a descriptive attempt at a terminal command. 
+
+You must infer what command the user is trying to invoke and output the target command.
+
+The output format you must use is <target-command>, without backticks.
+"
+user="\`$@\`"
+prompt=$(aicat-messages <(echo "$developer" | aimessage --role developer) <(echo "$user" | aimessage) )
+printf "$ "
+command=$(echo "$prompt" | aicomplete --stream | tee /dev/tty)
+read -p "Execute command? [y/N]" execute
+if [[ "$execute" == [yY] ]]; then
+    echo
+    bash -c "$command"
+fi
