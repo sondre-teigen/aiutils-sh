@@ -39,7 +39,8 @@ fn main() -> anyhow::Result<()> {
             })
             .collect::<Vec<_>>()
             .join(" ");
-
+        
+        writeln!(out, "")?;
         writeln!(out, "Command: `{}`", formatted_command)?;
         writeln!(out, "```console")?;
 
@@ -62,7 +63,6 @@ fn main() -> anyhow::Result<()> {
         let status = process.wait()?;
 
         writeln!(out, "```")?;
-        writeln!(out, "")?;
 
         anyhow::Result::<_, anyhow::Error>::Ok(status)
     }?;

@@ -1,4 +1,7 @@
 #!/bin/bash
+file=$1
+shift
+
 if [ ! -z "$AI_DEVELOPER" ]; then
     history=$(aimessage --role developer "$AI_DEVELOPER")
 else
@@ -11,11 +14,17 @@ while true; do
     if [ -z "$prompt" ]; then
         break
     fi
+    prompt=$(echo "$prompt" | cat - <(aifile "$file"))
     history=$(aicat-messages <(echo "$history") <(echo "$prompt" | aimessage))
     
     printf "assistant> "
-    response=$(echo "$history" | aicomplete --stream $@ | tee /dev/tty)
+    response_file=$(mktemp)
+    echo "$history" |
+     aicomplete --stream --prediction "$file" | 
+     tee "$response_file" |
+     aiextract-block --block-index 0 --redirect-rest /dev/tty |
+     aisponge "$file"
     echo
 
-    history=$(aicat-messages <(echo "$history") <(echo "$response" | aimessage --role assistant))
+    history=$(aicat-messages <(echo "$history") <(aimessage --role assistant "$response_file"))
 done
