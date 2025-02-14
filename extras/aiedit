@@ -9,6 +9,8 @@ OPTIONS:
     See \`aicomplete --help\`
 
 ENVIRONMENT VARIABLES:
+    AI_DEVELOPER    An optional file containing a developer prompt
+    
     See \`aicomplete --help\`
 "
 if [[ "$@" =~ "--help"|"-h" ]]; then
