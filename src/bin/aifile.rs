@@ -3,15 +3,21 @@ use std::path::PathBuf;
 use clap::Parser;
 use std::io::Write as _;
 
+/// Format a file with markup annotations
 #[derive(Parser)]
 struct Cli {
+    /// Input file. Use - to read stdin.
     file: PathBuf,
+    /// Override filename to use in output annotation
     #[arg(long)]
     name: Option<PathBuf>,
+    /// File language
     #[arg(long)]
     language: Option<String>,
+    /// Number of lines to print from the start of the file
     #[arg(long)]
     head: Option<usize>,
+    /// Number of lines to print from the end of the file
     #[arg(long)]
     tail: Option<usize>,
 }

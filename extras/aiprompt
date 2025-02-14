@@ -1,4 +1,21 @@
 #!/bin/bash
+help="Generate an AI completion based on a prompt from stdin
+
+Usage: aiprompt [OPTIONS]
+
+OPTIONS:
+    -h, --help      Print help and exit
+
+    See \`aicomplete --help\`
+
+ENVIRONMENT VARIABLES:
+    See \`aicomplete --help\`
+"
+if [[ "$@" =~ "--help"|"-h" ]]; then
+    echo "$help"
+    exit 0
+fi
+
 if [ ! -z "$AI_DEVELOPER" ]; then
     prompt=$(aimessage | aicat-messages <(aimessage --role developer "$AI_DEVELOPER") -)
 else

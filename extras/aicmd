@@ -1,19 +1,61 @@
 #!/bin/bash
+help="Generate a terminal command with an AI model
+
+Usage: aicmd [OPTIONS --] <command description>
+
+OPTIONS:
+    -h, --help      Print help and exit
+
+    See \`aicomplete --help\`
+
+ENVIRONMENT VARIABLES:
+    See \`aicomplete --help\`
+"
+if [[ "$@" =~ "--help"|"-h" ]]; then
+    echo "$help"
+    exit 0
+fi
+
+if [[ " $* " =~ ((.*) -- (.*)) ]]; then
+    options="${BASH_REMATCH[2]}"
+    command="${BASH_REMATCH[3]}"
+else
+    options=""
+    command="$*"
+fi
+
 developer="
-You are a terminal command helper model.
+You are a terminal command helper.
 
 The user will provide a descriptive attempt at a terminal command. 
 
 You must infer what command the user is trying to invoke and output the target command.
 
-The output format you must use is <target-command>, without backticks.
+You must output the command directly, without backticks or comments.
+
+The user may subsequently ask for an explanation after reviewing the generated command. If so, give a concise explanation of the command and options.
 "
-user="\`$@\`"
+user="\`$command\`"
 prompt=$(aicat-messages <(echo "$developer" | aimessage --role developer) <(echo "$user" | aimessage) )
 printf "$ "
-command=$(echo "$prompt" | aicomplete --stream | tee /dev/tty)
-read -p "Execute command? [y/N]" execute
+target_command=$(echo "$prompt" | aicomplete --stream $options | tee /dev/tty)
+response="$target_command"
+
+read -p "Execute command? [y/N/explain] " execute
 if [[ "$execute" == [yY] ]]; then
     echo
-    bash -c "$command"
+    bash -c "$target_command"
+elif [[ "$execute" == "explain" ]]; then
+    prompt=$(aicat-messages <(echo "$prompt") <(echo "$response" | aimessage --role assistant) <(echo "Please explaing the generated command" | aimessage))
+    echo
+    printf "assistant> "
+    aicomplete --stream $options <<< "$prompt"
+    
+    echo
+    echo "$ $target_command"
+    read -p "Execute command? [y/N] " execute
+    if [[ "$execute" == [yY] ]]; then
+        echo
+        bash -c "$target_command"
+    fi
 fi

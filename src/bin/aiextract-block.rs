@@ -5,14 +5,18 @@ use std::{
 
 use clap::Parser;
 
+/// Parse and extract markdown code blocks
 #[derive(Parser)]
 struct Cli {
+    /// Input file. Use - to read stdin
     #[arg(default_value = "-")]
     file: PathBuf,
 
+    /// Redirect non-codeblock text
     #[arg(long)]
     redirect_rest: Option<PathBuf>,
 
+    /// Extract specific code block
     #[arg(long)]
     block_index: Option<usize>,
 }

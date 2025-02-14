@@ -1,4 +1,21 @@
 #!/bin/bash
+help="Interactively edit a file with an AI model and chat
+
+Usage: aiedit <file> [OPTIONS]
+
+OPTIONS:
+    -h, --help      Print help and exit
+
+    See \`aicomplete --help\`
+
+ENVIRONMENT VARIABLES:
+    See \`aicomplete --help\`
+"
+if [[ "$@" =~ "--help"|"-h" ]]; then
+    echo "$help"
+    exit 0
+fi
+
 file=$1
 shift
 

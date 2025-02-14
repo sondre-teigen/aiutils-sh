@@ -3,12 +3,16 @@ use std::path::PathBuf;
 use aituils_sh::api::{Message, Role};
 use clap::Parser;
 
+/// Convert input text into API markup message
 #[derive(Parser)]
 struct Cli {
+    /// Input file. Use - to read stdin.
     #[arg(default_value = "-")]
-    content: PathBuf,
+    file: PathBuf,
+    /// Message role
     #[arg(long, default_value = "user")]
     role: Role,
+    /// Generate an empty message markup
     #[arg(long)]
     empty: bool,
 }
@@ -21,7 +25,7 @@ fn main() -> anyhow::Result<()> {
         return Ok(());
     }
 
-    let content = aituils_sh::fs::read_string(args.content)?;
+    let content = aituils_sh::fs::read_string(args.file)?;
 
     let message = vec![Message {
         role: args.role,

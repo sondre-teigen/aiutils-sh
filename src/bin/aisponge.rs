@@ -1,13 +1,15 @@
 use std::{
-    io::{BufRead as _, BufReader, Seek, Write as _},
+    io::{BufReader, Seek},
     path::PathBuf,
 };
 
 use clap::Parser;
 
+/// Collect stdin into a file line by line without truncating.
 #[derive(Parser)]
 struct Cli {
-    output: PathBuf,
+    /// File to collect input into
+    file: PathBuf,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -16,7 +18,7 @@ fn main() -> anyhow::Result<()> {
     let mut file = std::fs::OpenOptions::new()
         .write(true)
         .read(true)
-        .open(args.output)?;
+        .open(args.file)?;
     file.seek(std::io::SeekFrom::Start(0))?;
 
     aituils_sh::io::write_lines(&mut file, BufReader::new(std::io::stdin()))?;

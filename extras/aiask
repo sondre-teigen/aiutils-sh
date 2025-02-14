@@ -1,4 +1,23 @@
 #!/bin/bash
+help="Ask an AI model a standalone question from stdin
+
+Usage: aiask [OPTIONS]
+
+OPTIONS:
+    -h, --help      Print help and exit
+
+    See \`aicomplete --help\`
+
+ENVIRONMENT VARIABLES:
+    AI_DEVELOPER    An optional file containing a developer prompt
+    
+    See \`aicomplete --help\`
+"
+if [[ "$@" =~ "--help"|"-h" ]]; then
+    echo "$help"
+    exit 0
+fi
+
 printf "user> "
 if [ ! -z "$AI_DEVELOPER" ]; then
     prompt=$(aimessage | aicat-messages <(aimessage --role developer "$AI_DEVELOPER") -) 

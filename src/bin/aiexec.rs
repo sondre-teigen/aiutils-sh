@@ -2,18 +2,25 @@ use std::io::{BufReader, Write};
 
 use clap::Parser;
 
+/// Execute command and format output with markup annotation
 #[derive(Parser)]
 struct Cli {
+    /// Command to execute and capture
     #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
     command: Vec<String>,
 
+    /// Return exit status from executed command
     #[arg(long)]
     forward_status: bool,
+
+    /// Exclude stderr output from annotated output
     #[arg(long)]
     no_stderr: bool,
 
+    /// Number of lines to keep from the start of the output
     #[arg(long)]
     head: Option<usize>,
+    /// Number of lines to keep from the end of the output
     #[arg(long)]
     tail: Option<usize>,
 }
