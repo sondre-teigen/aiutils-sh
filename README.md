@@ -3,7 +3,7 @@
 Shell utilities for operating LLM APIs.
 
 Supported API providers:
-- OpenAI
+- OpenAI: API key read via environment variable `OPENAI_API_KEY`.
 
 ## Table of Contents
 - [Primitive Utilities](#primitive-utilities)
