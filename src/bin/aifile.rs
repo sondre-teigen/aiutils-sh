@@ -32,7 +32,7 @@ fn main() -> anyhow::Result<()> {
         .as_ref()
         .and_then(|s| Some(s.as_str()))
         .unwrap_or("");
-    
+
     writeln!(out, "")?;
     writeln!(out, "File: `{}`", name.display())?;
     writeln!(out, "```{}", language)?;

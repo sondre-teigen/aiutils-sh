@@ -14,7 +14,7 @@ struct Cli {
     #[arg(default_value = "-")]
     query: PathBuf,
 
-    /// Embeddings to compare query with 
+    /// Embeddings to compare query with
     embeddings: Vec<PathBuf>,
 
     /// Max result limit

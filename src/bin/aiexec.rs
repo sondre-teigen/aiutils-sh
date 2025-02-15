@@ -46,7 +46,7 @@ fn main() -> anyhow::Result<()> {
             })
             .collect::<Vec<_>>()
             .join(" ");
-        
+
         writeln!(out, "")?;
         writeln!(out, "Command: `{}`", formatted_command)?;
         writeln!(out, "```console")?;
