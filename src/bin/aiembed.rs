@@ -5,10 +5,10 @@ use clap::Parser;
 /// Generate embeddings of the contents of the input files
 #[derive(Parser)]
 struct Cli {
-    /// Files to embed
+    /// Files to embed. Use - to read stdin
     files: Vec<PathBuf>,
 
-    /// File to store embeddings in JSON
+    /// File to store embeddings in JSON. Use - to write to stdout
     #[arg(long, default_value = "-")]
     output: PathBuf,
 
