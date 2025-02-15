@@ -103,7 +103,7 @@ fn main() -> anyhow::Result<()> {
             }
         }
         if args.score {
-            println!("{} {}", score.score.0, score.path);
+            println!("{:.4} {}", score.score.0, score.path);
         } else {
             println!("{}", score.path);
         }
