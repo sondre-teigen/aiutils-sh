@@ -5,6 +5,13 @@ Shell utilities for operating LLM APIs.
 Supported API providers:
 - OpenAI
 
+## Table of Contents
+- [Primitive Utilities](#primitive-utilities)
+  - [Prompt Construction and Completion](#prompt-construction-and-completion)
+  - [Completion Output Handling](#completion-output-handling)
+  - [Embeddings](#embeddings)
+- [Extra Utilities](#extra-utilities)
+
 ## Primitive Utilities
 
 Primitive utilities implemented in Rust.
@@ -156,7 +163,6 @@ Your build fails because you used `f` instead of `fn`. Change `f main()` to `fn 
 
   ```plaintext
   Certainly! Here is a simple Python function that prints "Hello, world!":
-
 
   You can run this code in any Python environment to see the output.
   ```
