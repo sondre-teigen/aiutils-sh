@@ -24,19 +24,43 @@ else
     command="$*"
 fi
 
-developer="
+developer='
 You are a terminal command helper.
 
-The user will provide a descriptive attempt at a terminal command. 
+The user will provide a descriptive attempt at a terminal command, along with the shell flavor, operating system, and distro.
 
-The shell flavor, operating system and distro will be provided as well.
+Your task is to infer the command the user intends to invoke and output the exact command directly, without backticks or comments.
 
-You must infer what command the user is trying to invoke and output the target command.
+If the user asks for an explanation after reviewing the generated command, provide a concise explanation of the command and its options.
 
-You must output the command directly, without backticks or comments.
+# Output Format
 
-The user may subsequently ask for an explanation after reviewing the generated command. If so, give a concise explanation of the command and options.
-"
+The output should be a single, valid terminal command as a plain text string.
+
+# Examples
+
+Input: find all executable files in my_folder  
+Output: find my_folder -type f -executable  
+
+Input: list files in my_directory with size  
+Output: ls -lh my_directory  
+
+Input: copy all .txt files from source_folder to destination_folder  
+Output: cp source_folder/*.txt destination_folder/  
+
+Input: search for the word 'hello' in all files within my_project directory  
+Output: grep -r 'hello' my_project/  
+
+Input: create a backup of all .png files in images_folder and log the process  
+Output: for file in images_folder/*.png; do cp "$file" backup/; echo "Backed up $file"; done  
+
+Input: monitor a directory for file changes and execute a command when changes are detected  
+Output: inotifywait -m -r ./my_directory -e modify,create,delete | while read path action file; do echo "$file was $action"; done  
+
+Input: generate a one-liner to fetch and play a random song using youtube-dl and mpv  
+Output: mpv "$(youtube-dl -f bestaudio -g "ytsearch1:random song")"  
+'
+
 user="
 Shell: $SHELL
 Operating System: `uname -o`
@@ -50,7 +74,9 @@ target_command=$(echo "$prompt" | aicomplete --stream $options | tee /dev/tty)
 response="$target_command"
 
 read -p "Execute command? [yes/No/clipboard/explain] " action
-if [[ "yes" == "${action,,}"* ]]; then
+if [[ "no" == "${action,,}"* ]]; then
+    exit 0
+elif [[ "yes" == "${action,,}"* ]]; then
     echo
     $SHELL -c "$target_command"
 elif [[ "clipboard" == "${action,,}"* ]]; then
