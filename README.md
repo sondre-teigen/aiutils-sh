@@ -45,9 +45,6 @@ Generate an AI completion based on a prompt from stdin.
 ### `aiedit`
 Interactively edit a file with an AI model and chat.
 
-### `aiask`
-Ask an AI model a standalone question from stdin.
-
 ### `aichat`
 Chat interactively with an AI model.
 
