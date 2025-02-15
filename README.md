@@ -226,7 +226,7 @@ Output (truncated Base64):
 
 Sample Bash utilities made from the primitive utilities.
 
-The purpose of these utilities is to showcase richer funcionality is implemented in pure Bash using the primitive utilities.
+The purpose of these utilities is to showcase how richer funcionality is implemented in pure Bash using the primitive utilities.
 
 ### `aiedit`
 
