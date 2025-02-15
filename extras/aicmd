@@ -29,33 +29,35 @@ You are a terminal command helper.
 
 The user will provide a descriptive attempt at a terminal command. 
 
+The shell flavor, operating system and distro will be provided as well.
+
 You must infer what command the user is trying to invoke and output the target command.
 
 You must output the command directly, without backticks or comments.
 
 The user may subsequently ask for an explanation after reviewing the generated command. If so, give a concise explanation of the command and options.
 "
-user="\`$command\`"
+user="
+Shell: $SHELL
+Operating System: `uname -o`
+Distro: $(. <(cat /etc/*release) ; echo "$NAME $VERSION")
+
+Command description: \`$command\`
+"
 prompt=$(aicat-messages <(echo "$developer" | aimessage --role developer) <(echo "$user" | aimessage) )
 printf "$ "
 target_command=$(echo "$prompt" | aicomplete --stream $options | tee /dev/tty)
 response="$target_command"
 
-read -p "Execute command? [y/N/explain] " execute
-if [[ "$execute" == [yY] ]]; then
+read -p "Execute command? [yes/No/clipboard/explain] " action
+if [[ "yes" == "${action,,}"* ]]; then
     echo
-    bash -c "$target_command"
-elif [[ "$execute" == "explain" ]]; then
-    prompt=$(aicat-messages <(echo "$prompt") <(echo "$response" | aimessage --role assistant) <(echo "Please explaing the generated command" | aimessage))
+    $SHELL -c "$target_command"
+elif [[ "clipboard" == "${action,,}"* ]]; then
+    xclip -selection clipboard <<< "$target_command"
+elif [[ "explain" == "${action,,}"* ]]; then
+    prompt=$(aicat-messages <(echo "$prompt") <(aimessage --role assistant <<< "$response") <(aimessage <<< "Please explain the generated command"))
     echo
     printf "assistant> "
     aicomplete --stream $options <<< "$prompt"
-    
-    echo
-    echo "$ $target_command"
-    read -p "Execute command? [y/N] " execute
-    if [[ "$execute" == [yY] ]]; then
-        echo
-        bash -c "$target_command"
-    fi
 fi

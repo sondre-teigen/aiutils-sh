@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use aituils_sh::api::Message;
 use clap::Parser;
 
-/// Generate a complection from API markup messages
+/// Generate a completion from API markup messages
 #[derive(Parser)]
 struct Cli {
     /// File containing API markup input messages. Use - to read stdin

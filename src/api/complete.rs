@@ -3,10 +3,6 @@ use std::io::{stdout, BufRead as _, BufReader, Write as _};
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
-pub fn get_key() -> anyhow::Result<String> {
-    Ok(std::env::var("OPENAI_API_KEY")?)
-}
-
 #[derive(Deserialize, Serialize, ValueEnum, Clone, Copy, Debug)]
 pub enum Role {
     #[serde(rename = "user")]

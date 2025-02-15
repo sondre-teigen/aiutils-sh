@@ -48,7 +48,7 @@ where
     P: AsRef<Path>,
 {
     let mut out = String::new();
-    open(path)?.read_to_string(&mut out)?;
+    open_buffered(path)?.read_to_string(&mut out)?;
     Ok(out)
 }
 
