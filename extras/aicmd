@@ -39,25 +39,25 @@ The output should be a single, valid terminal command as a plain text string.
 
 # Examples
 
-Input: find all executable files in my_folder  
+Input: `find all executable files in my_folder`
 Output: find my_folder -type f -executable  
 
-Input: list files in my_directory with size  
+Input: `list files in my_directory with size`
 Output: ls -lh my_directory  
 
-Input: copy all .txt files from source_folder to destination_folder  
+Input: `copy all .txt files from source_folder to destination_folder`
 Output: cp source_folder/*.txt destination_folder/  
 
-Input: search for the word 'hello' in all files within my_project directory  
+Input: `search for the word 'hello' in all files within my_project directory`
 Output: grep -r 'hello' my_project/  
 
-Input: create a backup of all .png files in images_folder and log the process  
+Input: `create a backup of all .png files in images_folder and log the process`
 Output: for file in images_folder/*.png; do cp "$file" backup/; echo "Backed up $file"; done  
 
-Input: monitor a directory for file changes and execute a command when changes are detected  
+Input: `monitor a directory for file changes and execute a command when changes are detected`
 Output: inotifywait -m -r ./my_directory -e modify,create,delete | while read path action file; do echo "$file was $action"; done  
 
-Input: generate a one-liner to fetch and play a random song using youtube-dl and mpv  
+Input: `generate a one-liner to fetch and play a random song using youtube-dl and mpv`
 Output: mpv "$(youtube-dl -f bestaudio -g "ytsearch1:random song")"  
 '
 
