@@ -10,7 +10,8 @@ OPTIONS:
 
 ENVIRONMENT VARIABLES:
     AI_DEVELOPER    An optional file containing a developer prompt
-    
+    AI_VIASHELL     Run prompts via the user shell
+
     See \`aicomplete --help\`
 "
 if [[ "$@" =~ "--help"|"-h" ]]; then
@@ -32,6 +33,13 @@ while true; do
     echo
     if [ -z "$prompt" ]; then
         break
+    fi
+    if [ ! -z "$AI_VIASHELL" ]; then
+        prompt=$($SHELL -c "echo \"$prompt\"")
+        echo
+        printf "user|shell> "
+        echo "$prompt"
+        echo
     fi
     prompt=$(echo "$prompt" | cat - <(aifile "$file"))
     history=$(aicat-messages <(echo "$history") <(echo "$prompt" | aimessage))
