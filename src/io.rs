@@ -39,10 +39,12 @@ where
             if head.len() < head_count {
                 head.push(line.clone());
             }
-            while tail.len() >= tail_count {
-                tail.pop_front();
+            if tail_count > 0 {
+                while tail.len() >= tail_count {
+                    tail.pop_front();
+                }
+                tail.push_back(line);
             }
-            tail.push_back(line);
         }
 
         let overlap = (head.len() + tail.len()).saturating_sub(total_lines);
