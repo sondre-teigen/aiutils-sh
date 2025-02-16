@@ -32,14 +32,22 @@ while true; do
         break
     fi
     if [ ! -z "$AI_VIASHELL" ]; then
-        prompt=$($SHELL -c "echo \"$prompt\"")
         echo
         printf "user|shell> "
-        echo "$prompt"
+        prompt=$(
+            (
+                while IFS= read -r line; do
+                    if [[ "$line" == \$* ]]; then
+                        bash -c "${line##\$}" | tee /dev/tty
+                    else
+                        echo "$line"
+                    fi
+                done <<< "$prompt"
+            ))
         echo
     fi
     history=$(aicat-messages <(echo "$history") <(echo "$prompt" | aimessage))
-    
+
     printf "assistant> "
     response=$(echo "$history" | aicomplete --stream $@ | tee /dev/tty)
     echo
