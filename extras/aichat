@@ -42,8 +42,9 @@ while true; do
                     else
                         echo "$line"
                     fi
-                done <<< "$prompt"
-            ))
+                done <<<"$prompt"
+            )
+        )
         echo
     fi
     history=$(aicat-messages <(echo "$history") <(echo "$prompt" | aimessage))

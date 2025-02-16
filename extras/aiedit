@@ -45,20 +45,21 @@ while true; do
                     else
                         echo "$line"
                     fi
-                done <<< "$prompt"
-            ))
+                done <<<"$prompt"
+            )
+        )
         echo
     fi
     prompt=$(echo "$prompt" | cat - <(aifile "$file"))
     history=$(aicat-messages <(echo "$history") <(echo "$prompt" | aimessage))
-    
+
     printf "assistant> "
     response_file=$(mktemp)
     echo "$history" |
-     aicomplete --stream --prediction "$file" $@ | 
-     tee "$response_file" |
-     aiextract-block --block-index 0 --redirect-rest /dev/tty |
-     aisponge "$file"
+        aicomplete --stream --prediction "$file" $@ |
+        tee "$response_file" |
+        aiextract-block --block-index 0 --redirect-rest /dev/tty |
+        aisponge "$file"
     echo
 
     history=$(aicat-messages <(echo "$history") <(aimessage --role assistant "$response_file"))

@@ -63,12 +63,15 @@ Output: mpv "$(youtube-dl -f bestaudio -g "ytsearch1:random song")"
 
 user="
 Shell: $SHELL
-Operating System: `uname -o`
-Distro: $(. <(cat /etc/*release) ; echo "$NAME $VERSION")
+Operating System: $(uname -o)
+Distro: $(
+    . <(cat /etc/*release)
+    echo "$NAME $VERSION"
+)
 
 Command description: \`$command\`
 "
-prompt=$(aicat-messages <(echo "$developer" | aimessage --role developer) <(echo "$user" | aimessage) )
+prompt=$(aicat-messages <(echo "$developer" | aimessage --role developer) <(echo "$user" | aimessage))
 printf "$ "
 target_command=$(echo "$prompt" | aicomplete --stream $options | tee /dev/tty)
 response="$target_command"
@@ -80,10 +83,10 @@ elif [[ "yes" == "${action,,}"* ]]; then
     echo
     $SHELL -c "$target_command"
 elif [[ "clipboard" == "${action,,}"* ]]; then
-    xclip -selection clipboard <<< "$target_command"
+    xclip -selection clipboard <<<"$target_command"
 elif [[ "explain" == "${action,,}"* ]]; then
-    prompt=$(aicat-messages <(echo "$prompt") <(aimessage --role assistant <<< "$response") <(aimessage <<< "Please explain the generated command"))
+    prompt=$(aicat-messages <(echo "$prompt") <(aimessage --role assistant <<<"$response") <(aimessage <<<"Please explain the generated command"))
     echo
     printf "assistant> "
-    aicomplete --stream $options <<< "$prompt"
+    aicomplete --stream $options <<<"$prompt"
 fi
